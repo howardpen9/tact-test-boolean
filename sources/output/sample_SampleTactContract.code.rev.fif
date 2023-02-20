@@ -70,7 +70,11 @@ SETCP0
         SDEQ
         <{
           s0 POP
-          s4 POP
+          63654 PUSHINT
+          s0 s5 XCHG
+          -1 NEQINT
+          s1 s5 XCHG
+          THROWANYIFNOT
           -1 PUSHINT
           s0 s2 XCHG
           INC
@@ -79,7 +83,11 @@ SETCP0
           s1 PUSH
           SDEQ
           <{
-            s3 POP
+            63654 PUSHINT
+            s0 s4 XCHG
+            -1 NEQINT
+            s1 s4 XCHG
+            THROWANYIFNOT
             -1 PUSHINT
             s0 s2 XCHG
             INC

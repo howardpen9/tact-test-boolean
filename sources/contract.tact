@@ -18,10 +18,12 @@ contract SampleTactContract with  {
    receive("A") {
         let ctx: Context = context();
         if (ctx.sender == self.sender_1) {
+            require(self.case_a != true, "Not correct status.");
             self.case_a = true;
             self.counter = self.counter + 1;
         }
         else if (ctx.sender == self.sender_2) {
+            require(self.case_b != true, "Not correct status.");
             self.case_b = true;
             self.counter = self.counter + 1;
         }

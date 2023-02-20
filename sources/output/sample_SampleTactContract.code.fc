@@ -180,9 +180,11 @@ cell $__gen_String_asComment(slice $self) impure inline_ref {
     var ($self'case_a, $self'case_b, $self'counter, $self'sender_1, $self'sender_2) = $self;
     var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
     if (__tact_address_eq($ctx'sender, $self'sender_1)) {
+        throw_unless(63654, ($self'case_a != true));
         $self'case_a = true;
         $self'counter = ($self'counter + 1);
     } elseif (__tact_address_eq($ctx'sender, $self'sender_2)) {
+        throw_unless(63654, ($self'case_b != true));
         $self'case_b = true;
         $self'counter = ($self'counter + 1);
     }
@@ -235,5 +237,5 @@ _ supported_interfaces() method_id {
 }
 
 _ get_abi_ipfs() {
-    return "ipfs://QmTVHys5vLxcNq6PiCjs9cyFzRkfNEoVaKJJiV9711tD2Y";
+    return "ipfs://QmUX6ZJTyuNTa8hZ1Av9NinDPxDtr6NkGS61noTda71J6x";
 }
