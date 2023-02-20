@@ -1,5 +1,9 @@
+#pragma version =0.4.1;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
 () __tact_verify_address(slice address) inline {
-    throw_unless(134, address.slice_bits() != 267);
+    throw_unless(136, address.slice_bits() != 267);
 }
 
 builder __tact_store_address(builder b, slice address) inline {
@@ -8,26 +12,33 @@ builder __tact_store_address(builder b, slice address) inline {
     return b;
 }
 
-builder __gen_write_SampleTactContract(builder build_0, (slice, int) v) inline_ref {
-    var (v'owner, v'counter) = v;
-    build_0 = __tact_store_address(build_0, v'owner);
-    build_0 = build_0.store_uint(v'counter, 32);
+builder __gen_write_SampleTactContract(builder build_0, (int, int, int, slice, slice) v) inline {
+    var (v'case_a, v'case_b, v'counter, v'sender_1, v'sender_2) = v;
+    build_0 = build_0.store_int(v'case_a, 1);
+    build_0 = build_0.store_int(v'case_b, 1);
+    build_0 = build_0.store_int(v'counter, 257);
+    build_0 = __tact_store_address(build_0, v'sender_1);
+    build_0 = __tact_store_address(build_0, v'sender_2);
     return build_0;
 }
 
-cell $__gen_SampleTactContract_init(cell sys', slice $owner) {
-    var (($self'owner, $self'counter)) = (null(), null());
-    $self'owner = $owner;
+cell $__gen_SampleTactContract_init(cell sys', slice $sender_1, slice $sender_2) {
+    var (($self'case_a, $self'case_b, $self'counter, $self'sender_1, $self'sender_2)) = (null(), null(), null(), null(), null());
+    $self'sender_1 = $sender_1;
+    $self'sender_2 = $sender_2;
     $self'counter = 0;
+    $self'case_a = false;
+    $self'case_b = false;
     var b' = begin_cell();
     b' = b'.store_ref(sys');
-    b' = __gen_write_SampleTactContract(b', ($self'owner, $self'counter));
+    b' = __gen_write_SampleTactContract(b', ($self'case_a, $self'case_b, $self'counter, $self'sender_1, $self'sender_2));
     return b'.end_cell();
 }
 
-cell init(cell sys', slice $$owner) method_id {
-    slice $owner = $$owner;
-    return $__gen_SampleTactContract_init(sys', $owner);
+cell init(cell sys', slice $$sender_1, slice $$sender_2) method_id {
+    slice $sender_1 = $$sender_1;
+    slice $sender_2 = $$sender_2;
+    return $__gen_SampleTactContract_init(sys', $sender_1, $sender_2);
 }
 
 () main() {

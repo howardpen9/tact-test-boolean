@@ -16,7 +16,7 @@ import {
     TupleBuilder,
     DictionaryValue
 } from 'ton-core';
-import { ContractSystem, ContractExecutor } from 'ton-emulator';
+import { ExecutorEngine, getDefaultExecutorEngine } from '@tact-lang/runtime';
 
 export type StateInit = {
     $$type: 'StateInit';
@@ -185,7 +185,7 @@ function dictValueParserSendParameters(): DictionaryValue<SendParameters> {
         }
     }
 }
-async function SampleTactContract_init(sender_1: Address, sender_2: Address) {
+async function SampleTactContract_init(sender_1: Address, sender_2: Address, opts?: { engine?: ExecutorEngine }) {
     const __init = 'te6ccgEBBgEAQAABFP8A9KQT9LzyyAsBAgFiAgMCAs0EBQAJoUrd4AkAAdQAOdODg4AuRmAqghqCLlAAllAECAgOeAAOeLAOeLZM';
     const __code = 'te6ccgECCQEAAjkAART/APSkE/S88sgLAQIBYgIDAb7Q7aLt+3Ah10nCH5UwINcLH94C0NMDAXGwwAGRf5Fw4gH6QCJQZm8E+GECkVvgwACOp/kBgvCTxlCGbhvvkDY82T9WK0i+/N3CaQFWOX7gSC9lVrTIlrrjApEw4vLAggQATaF3owTgudh6ullc9j0J2HOslQo2zQThO6xqWlbI+WZFp15b++LEcwL67UTQ1AH4YtIA0gCBAQHXAPpAAQH6QAEVFEMwbBX4QW8kECNfA1MCxwWVMDR/AqSdIccFljN/AqRAE95EFOIiwP8kwP+wjxV/cIEAgotUxlZ2l0jbPCVVIG1t2zzeQBTI+EIBzFVAUEXKABLKAIEBAc8AAc8WAc8Wye1U2zEFBgFCyHAByx9vAAFvjG1vjAHbPG8iAcmTIW6zlgFvIlnMyegxBwH2yHEBygFQBwHKAHABygJQBc8WUAP6AnABymgjbrMlbrOxjkx/AcoAyHABygBwAcoAJG6znX8BygAEIG7y0IBQBMyWNANwAcoA4iRus51/AcoABCBu8tCAUATMljQDcAHKAOJwAcoAAn8BygACyVjMlzMzAXABygDiIW6zCAC6INdKIddJlyDCACLCALGOSgNvIoB/Is8xqwKhBasCUVW2CCDCAJwgqgIV1xhQM88WQBTeWW8CU0GhwgCZyAFvAlBEoaoCjhIxM8IAmdQw0CDXSiHXSZJwIOLi6F8DADCcfwHKAAEgbvLQgAHMlTFwAcoA4skB+wA=';
     const __system = 'te6cckECCwEAAkMAAQHAAQEFoebTAgEU/wD0pBP0vPLICwMCAWIFBABNoXejBOC52Hq6WVz2PQnYc6yVCjbNBOE7rGpaVsj5ZkWnXlv74sRzAb7Q7aLt+3Ah10nCH5UwINcLH94C0NMDAXGwwAGRf5Fw4gH6QCJQZm8E+GECkVvgwACOp/kBgvCTxlCGbhvvkDY82T9WK0i+/N3CaQFWOX7gSC9lVrTIlrrjApEw4vLAggYC+u1E0NQB+GLSANIAgQEB1wD6QAEB+kABFRRDMGwV+EFvJBAjXwNTAscFlTA0fwKknSHHBZYzfwKkQBPeRBTiIsD/JMD/sI8Vf3CBAIKLVMZWdpdI2zwlVSBtbds83kAUyPhCAcxVQFBFygASygCBAQHPAAHPFgHPFsntVNsxCQcB9shxAcoBUAcBygBwAcoCUAXPFlAD+gJwAcpoI26zJW6zsY5MfwHKAMhwAcoAcAHKACRus51/AcoABCBu8tCAUATMljQDcAHKAOIkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDicAHKAAJ/AcoAAslYzJczMwFwAcoA4iFuswgAMJx/AcoAASBu8tCAAcyVMXABygDiyQH7AAFCyHAByx9vAAFvjG1vjAHbPG8iAcmTIW6zlgFvIlnMyegxCgC6INdKIddJlyDCACLCALGOSgNvIoB/Is8xqwKhBasCUVW2CCDCAJwgqgIV1xhQM88WQBTeWW8CU0GhwgCZyAFvAlBEoaoCjhIxM8IAmdQw0CDXSiHXSZJwIOLi6F8DeilN7Q==';
@@ -197,9 +197,8 @@ async function SampleTactContract_init(sender_1: Address, sender_2: Address) {
     let __stack = builder.build();
     let codeCell = Cell.fromBoc(Buffer.from(__code, 'base64'))[0];
     let initCell = Cell.fromBoc(Buffer.from(__init, 'base64'))[0];
-    let system = await ContractSystem.create();
-    let executor = await ContractExecutor.create({ code: initCell, data: new Cell() }, system);
-    let res = await executor.get('init', __stack);
+    let executor = opts && opts.engine ? opts.engine : getDefaultExecutorEngine();
+    let res = await executor.get({ method: 'init', stack: __stack, code: initCell, data: new Cell() });
     if (!res.success) { throw Error(res.error); }
     if (res.exitCode !== 0 && res.exitCode !== 1) {
         if (SampleTactContract_errors[res.exitCode]) {
@@ -208,7 +207,7 @@ async function SampleTactContract_init(sender_1: Address, sender_2: Address) {
             throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode, { logs: res.logs });
         }
     }
-    let data = res.stack.readCell();
+    let data = new TupleReader(res.stack).readCell();
     return { code: codeCell, data };
 }
 
@@ -240,12 +239,12 @@ const SampleTactContract_errors: { [key: number]: { message: string } } = {
 
 export class SampleTactContract implements Contract {
     
-    static async init(sender_1: Address, sender_2: Address) {
-        return await SampleTactContract_init(sender_1, sender_2);
+    static async init(sender_1: Address, sender_2: Address, opts?: { engine?: ExecutorEngine }) {
+        return await SampleTactContract_init(sender_1, sender_2, opts);
     }
     
-    static async fromInit(sender_1: Address, sender_2: Address) {
-        const init = await SampleTactContract_init(sender_1, sender_2);
+    static async fromInit(sender_1: Address, sender_2: Address, opts?: { engine?: ExecutorEngine }) {
+        const init = await SampleTactContract_init(sender_1, sender_2, opts);
         const address = contractAddress(0, init);
         return new SampleTactContract(address, init);
     }

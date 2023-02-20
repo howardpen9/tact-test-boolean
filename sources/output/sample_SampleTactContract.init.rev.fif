@@ -4,15 +4,23 @@ SETCP0
 
   4: 
     0 PUSHINT
-    s0 s2 XCHG
+    0 PUSHINT
+    0 PUSHINT
+    s0 s5 XCHG
     NEWC
     STREF
-    s0 s2 XCHG
-    <{
-      ROTREV
-      STSLICER
-      32 STU
-    }> CALLREF
+    s0 s5 XCHG
+    s4 s3 XCHG2
+    s4 s5 XCHG2
+    1 STI
+    s1 s2 XCHG
+    1 STI
+    257 PUSHINT
+    STIX
+    s0 s1 XCHG
+    STSLICER
+    s0 s1 XCHG
+    STSLICER
     ENDC
 
   107886: 

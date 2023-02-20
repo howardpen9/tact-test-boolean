@@ -9,22 +9,32 @@ PROGRAM{
     SBITS
     267 PUSHINT
     NEQ
-    134 THROWIFNOT
+    136 THROWIFNOT
   }>
   __tact_store_address PROCINLINE:<{
     STSLICER
   }>
-  __gen_write_SampleTactContract PROCREF:<{
-    -ROT
+  __gen_write_SampleTactContract PROCINLINE:<{
+    s4 s5 XCHG2
+    1 STI
+    s1 s2 XCHG
+    1 STI
+    257 PUSHINT
+    STIX
+    SWAP
     __tact_store_address INLINECALLDICT
-    32 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
   }>
   $__gen_SampleTactContract_init PROC:<{
     0 PUSHINT
-    s0 s2 XCHG
+    FALSE
+    FALSE
+    s0 s5 XCHG
     NEWC
     STREF
-    s0 s2 XCHG
+    s0 s5 XCHG
+    s4 s3 XCHG2
     __gen_write_SampleTactContract INLINECALLDICT
     ENDC
   }>
